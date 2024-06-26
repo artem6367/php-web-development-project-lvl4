@@ -4,6 +4,16 @@ on:
 jobs:
   Run-tests-and-linter:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: task_manager
+        ports:
+          5432:5432
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -16,6 +26,9 @@ jobs:
 
       - name: Generate app key
         run: php artisan key:generate
+
+      - name: Migrate tables
+        run: php artisan migrate
 
       - name: Run tests
         run: make test
