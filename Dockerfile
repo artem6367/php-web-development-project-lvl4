@@ -17,4 +17,7 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
+CMD composer install
+CMD cp -p .env.example .env
+CMD php artisan key:generate
 CMD ["/start.sh"]
