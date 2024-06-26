@@ -12,7 +12,7 @@ jobs:
           POSTGRES_PASSWORD: root
           POSTGRES_DB: task_manager
         ports:
-          5432:5432
+          - 5432:5432
 
     steps:
       - name: Check out repository code
