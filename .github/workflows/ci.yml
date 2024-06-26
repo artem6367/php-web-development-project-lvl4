@@ -18,17 +18,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Composer install
-        run: composer install
-
-      - name: Create file .env
-        run: cp -p .env.example .env
-
-      - name: Generate app key
-        run: php artisan key:generate
-
-      - name: Migrate tables
-        run: php artisan migrate
+      - name: Install application
+        run: make install
 
       - name: Run tests
         run: make test
