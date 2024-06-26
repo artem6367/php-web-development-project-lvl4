@@ -11,6 +11,12 @@ jobs:
       - name: Composer install
         run: composer install
 
+      - name: Create file .env
+        run: cp -p .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
       - name: Run tests
         run: make test
 
