@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TasksController;
 use App\Http\Controllers\TaskStatusesController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,5 +20,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::resource('task_statuses', TaskStatusesController::class);
+
+Route::resource('tasks', TasksController::class);
 
 require __DIR__.'/auth.php';

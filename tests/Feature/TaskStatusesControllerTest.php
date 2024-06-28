@@ -2,59 +2,46 @@
 
 namespace Tests\Feature;
 
+use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TaskStatusesControllerTest extends TestCase
 {
-    use DatabaseMigrations;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->artisan('migrate');
-        $this->artisan('db:seed');
-    }
+    use RefreshDatabase;
 
     public function testIndex()
     {
-        $response = $this->get(route('task_statuses.index'));
-        $response->assertStatus(200);
+        $this->get('/task_statuses')
+            ->assertStatus(200);
     }
 
     public function testCreate()
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->get(route('task_statuses.create'));
-        $response->assertStatus(200);
-    }
+        $this->get('/task_statuses/create')
+            ->assertStatus(403);
 
-    public function testCreateForbidden()
-    {
-        $response = $this->get(route('task_statuses.create'));
-        $response->assertStatus(403);
+        $this->actingAs($user)
+            ->get('/task_statuses/create')
+            ->assertStatus(200);
     }
 
     public function testStore()
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->from(route('task_statuses.create'))
-            ->post(route('task_statuses.store'), [
+        $this->actingAs($user)
+            ->from('/task_statuses/create')
+            ->post('/task_statuses', [
                 'name' => 'name status'
-            ]);
+            ])->assertRedirect('/task_statuses');
 
-        $response->assertRedirect(route('task_statuses.index'));
-
-        $response2 = $this->get(route('task_statuses.index'));
-        $response2->assertSeeText('name status');
+        $this->get('/task_statuses')
+            ->assertSeeText('name status');
     }
 
     public function testEdit()
@@ -62,17 +49,12 @@ class TaskStatusesControllerTest extends TestCase
         $user = User::factory()->create();
         $status = TaskStatus::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->get(route('task_statuses.edit', $status));
-        $response->assertStatus(200);
-    }
+        $this->get("/task_statuses/{$status->id}/edit")
+            ->assertStatus(403);
 
-    public function testEditForbidden()
-    {
-        $status = TaskStatus::factory()->create();
-        $response = $this->get(route('task_statuses.edit', $status));
-        $response->assertStatus(403);
+        $this->actingAs($user)
+            ->get("/task_statuses/{$status->id}/edit")
+            ->assertStatus(200);
     }
 
     public function testUpdate()
@@ -80,36 +62,40 @@ class TaskStatusesControllerTest extends TestCase
         $user = User::factory()->create();
         $status = TaskStatus::factory()->create();
         $newStatusName = 'changed name status';
-        $response = $this
+        $this
             ->actingAs($user)
-            ->from(route('task_statuses.edit', $status))
-            ->patch(route('task_statuses.update', $status), [
+            ->from("/task_statuses/{$status->id}/edit")
+            ->patch("/task_statuses/{$status->id}", [
                 'name' => $newStatusName
-            ]);
+            ])->assertRedirect('/task_statuses');
 
-        $response->assertRedirect(route('task_statuses.index'));
-        $response2 = $this->get(route('task_statuses.index'));
-        $response2->assertSeeText($newStatusName);
+        $this->get('/task_statuses')
+            ->assertSeeText($newStatusName);
     }
 
-    public function testDelete()
+    public function testDestroy()
     {
         $user = User::factory()->create();
         $status = TaskStatus::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->delete(route('task_statuses.destroy', $status));
-        $response->assertRedirect(route('task_statuses.index'));
+        $this->delete("/task_statuses/{$status->id}")
+            ->assertStatus(403);
 
-        $response2 = $this->get(route('task_statuses.index'));
-        $response2->assertDontSeeText($status->name);
-    }
+        $task = Task::factory()->create(['status_id' => $status->id]);
 
-    public function testDeleteForbidden()
-    {
-        $status = TaskStatus::factory()->create();
-        $response = $this->delete(route('task_statuses.destroy', $status));
-        $response->assertStatus(403);
+        $this->actingAs($user)
+            ->delete("/task_statuses/{$status->id}")
+            ->assertRedirect('/task_statuses');
+
+        $this->get('/task_statuses')->assertSeeText($status->name);
+
+        $task->delete();
+
+        $this->actingAs($user)
+            ->delete("/task_statuses/{$status->id}")
+            ->assertRedirect('/task_statuses');
+
+        $this->get('/task_statuses')
+            ->assertDontSeeText($status->name);
     }
 }

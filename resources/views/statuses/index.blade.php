@@ -1,10 +1,6 @@
 <x-app-layout>
     <x-slot name="title">Менеджер задач</x-slot>
-    <x-slot name="header">
-        <h1 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('views.status.index.header') }}
-        </h1>
-    </x-slot>
+    <x-slot name="header">{{ __('views.status.index.header') }}</x-slot>
     @if (Auth::check())
         <div class="mb-4">
             <a href="{{ route('task_statuses.create') }}"

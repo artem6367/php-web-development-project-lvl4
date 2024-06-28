@@ -98,9 +98,13 @@ class TaskStatusesController extends Controller
             throw new AuthorizationException();
         }
 
-        if ($taskStatus) {
-            $taskStatus->delete();
+        if ($taskStatus->tasks()->exists()) {
+            return redirect()
+                ->route('task_statuses.index')
+                ->with('success', __('messages.status.error.delete'));
         }
+
+        $taskStatus->delete();
 
         return redirect()
             ->route('task_statuses.index')

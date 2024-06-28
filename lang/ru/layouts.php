@@ -2,10 +2,11 @@
 
 return [
     'app' => [
-        'statuses' => 'Статусы',
         'taskManager' => 'Менеджер задач',
         'login' => 'Вход',
         'logout' => 'Выход',
         'registry' => 'Регистрация',
+        'statuses' => 'Статусы',
+        'tasks' => 'Задачи',
     ]
 ];
