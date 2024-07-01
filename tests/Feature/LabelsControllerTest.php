@@ -103,7 +103,7 @@ class LabelsControllerTest extends TestCase
             ->assertRedirect('/labels');
 
         $this->get('/labels')
-            ->assertSeeText($label->name);
+            ->assertSeeText($label->description);
 
         $taskLabel->delete();
 
@@ -113,6 +113,6 @@ class LabelsControllerTest extends TestCase
             ->assertRedirect('/labels');
 
         $this->get('/labels')
-            ->assertDontSeeText($label->name);
+            ->assertDontSeeText($label->description);
     }
 }
