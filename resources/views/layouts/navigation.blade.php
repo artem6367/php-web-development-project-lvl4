@@ -14,6 +14,9 @@
                     <x-nav-link :href="route('task_statuses.index')" :active="request()->routeIs('task_statuses.index')">
                         {{ __('layouts.app.statuses') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('labels.index')" :active="request()->routeIs('labels.index')">
+                        {{ __('layouts.app.labels') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -72,6 +75,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('task_statuses.index')" :active="request()->routeIs('task_statuses.index')">
                 {{ __('layouts.app.statuses') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('labels.index')" :active="request()->routeIs('labels.index')">
+                {{ __('layouts.app.labels') }}
             </x-responsive-nav-link>
         </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
@@ -32,7 +33,9 @@ class TasksController extends Controller
         $task = new Task();
         $statuses = TaskStatus::all()->pluck('name', 'id');
         $users = User::all()->pluck('name', 'id');
-        return view('tasks.create', compact('task', 'statuses', 'users'));
+        $labels = Label::all()->pluck('name', 'id');
+        $labelValues = [];
+        return view('tasks.create', compact('task', 'statuses', 'users', 'labels', 'labelValues'));
     }
 
     /**
@@ -48,12 +51,17 @@ class TasksController extends Controller
             'name' => 'required|max:255',
             'description' => 'nullable',
             'status_id' => 'required|exists:task_statuses,id',
-            'assigned_to_id' => 'nullable|exists:users,id'
+            'assigned_to_id' => 'nullable|exists:users,id',
+            'labels' => 'nullable|array|exists:labels,id'
         ]);
 
         $task = new Task($data);
         $task->author()->associate(Auth::user());
         $task->save();
+        if (array_key_exists('labels', $data)) {
+            $saveLabels = Label::whereIn('id', $data['labels'])->get();
+            $task->labels()->saveMany($saveLabels);
+        }
         return redirect()
             ->route('tasks.index')
             ->with('success', __('messages.task.success.create'));
@@ -77,7 +85,9 @@ class TasksController extends Controller
         }
         $statuses = TaskStatus::all()->pluck('name', 'id');
         $users = User::all()->pluck('name', 'id');
-        return view('tasks.edit', compact('task', 'statuses', 'users'));
+        $labels = Label::all()->pluck('name', 'id');
+        $labelValues = $task->labels()->get()->pluck('id')->all();
+        return view('tasks.edit', compact('task', 'statuses', 'users', 'labels', 'labelValues'));
     }
 
     /**
@@ -93,11 +103,21 @@ class TasksController extends Controller
             'name' => 'required|max:255',
             'description' => 'nullable',
             'status_id' => 'required|exists:task_statuses,id',
-            'assigned_to_id' => 'nullable|exists:users,id'
+            'assigned_to_id' => 'nullable|exists:users,id',
+            'labels' => 'nullable|array|exists:labels,id'
         ]);
 
         $task->fill($data);
         $task->save();
+        if (array_key_exists('labels', $data)) {
+            $currentLabels = $task->labels()->get()->pluck('id')->all();
+            $newLabels = Label::whereIn('id', $data['labels'])->whereNotIn('id', $currentLabels)->get();
+            $deleteLabels = Label::whereIn('id', $currentLabels)->whereNotIn('id', $data['labels'])->get();
+            $task->labels()->saveMany($newLabels);
+            $task->labels()->detach($deleteLabels);
+        } else {
+            $task->labels()->detach();
+        }
         return redirect()
             ->route('tasks.index')
             ->with('success', __('messages.task.success.update'));

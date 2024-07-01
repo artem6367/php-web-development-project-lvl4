@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TaskStatus;
+use App\Models\Label;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TaskStatusesController extends Controller
+class LabelsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $statuses = TaskStatus::paginate();
-        return view('statuses.index', compact('statuses'));
+        $labels = Label::paginate();
+        return view('labels.index', compact('labels'));
     }
 
     /**
@@ -26,8 +26,9 @@ class TaskStatusesController extends Controller
         if (Auth::guest()) {
             throw new AuthorizationException();
         }
-        $status = new TaskStatus();
-        return view('statuses.create', compact('status'));
+
+        $label = new Label();
+        return view('labels.create', compact('label'));
     }
 
     /**
@@ -40,20 +41,21 @@ class TaskStatusesController extends Controller
         }
 
         $data = $this->validate($request, [
-            'name' => 'required'
+            'name' => 'required|max:255',
+            'description' => 'nullable'
         ]);
 
-        $status = new TaskStatus($data);
-        $status->save();
+        $label = new Label($data);
+        $label->save();
         return redirect()
-            ->route('task_statuses.index')
-            ->with('success', __('messages.status.success.create'));
+            ->route('labels.index')
+            ->with('success', __('messages.label.success.create'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(TaskStatus $task_status)
+    public function show(Label $label)
     {
         //
     }
@@ -61,53 +63,55 @@ class TaskStatusesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TaskStatus $task_status)
+    public function edit(Label $label)
     {
         if (Auth::guest()) {
             throw new AuthorizationException();
         }
-        return view('statuses.edit', compact('task_status'));
+
+        return view('labels.edit', compact('label'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TaskStatus $task_status)
+    public function update(Request $request, Label $label)
     {
         if (Auth::guest()) {
             throw new AuthorizationException();
         }
 
         $data = $this->validate($request, [
-            'name' => 'required'
+            'name' => 'required|max:255',
+            'description' => 'nullable'
         ]);
 
-        $task_status->fill($data);
-        $task_status->save();
+        $label->fill($data);
+        $label->save();
         return redirect()
-            ->route('task_statuses.index')
-            ->with('success', __('messages.status.success.update'));
+            ->route('labels.index')
+            ->with('success', __('messages.label.success.update'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TaskStatus $taskStatus)
+    public function destroy(Label $label)
     {
         if (Auth::guest()) {
             throw new AuthorizationException();
         }
 
-        if ($taskStatus->tasks()->exists()) {
+        if ($label->tasks()->exists()) {
             return redirect()
-                ->route('task_statuses.index')
-                ->with('error', __('messages.status.error.delete'));
+                ->route('labels.index')
+                ->with('error', __('messages.label.error.delete'));
         }
 
-        $taskStatus->delete();
+        $label->delete();
 
         return redirect()
-            ->route('task_statuses.index')
-            ->with('success', __('messages.status.success.delete'));
+            ->route('labels.index')
+            ->with('success', __('messages.label.success.delete'));
     }
 }

@@ -8,5 +8,6 @@ return [
         'registry' => 'Регистрация',
         'statuses' => 'Статусы',
         'tasks' => 'Задачи',
+        'labels' => 'Метки',
     ]
 ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LabelsController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\TaskStatusesController;
 use Illuminate\Support\Facades\Route;
@@ -22,5 +23,7 @@ Route::get('/', function () {
 Route::resource('task_statuses', TaskStatusesController::class);
 
 Route::resource('tasks', TasksController::class);
+
+Route::resource('labels', LabelsController::class);
 
 require __DIR__.'/auth.php';

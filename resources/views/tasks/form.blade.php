@@ -25,3 +25,9 @@
     <x-select id="assigned_to_id" class="w-1/3" name="assigned_to_id" :items=$users :value="$task->assigned_to_id" />
     <x-input-error :messages="$errors->get('assigned_to_id')" class="mt-2" />
 </div>
+
+<div>
+    <x-input-label class="mt-2" for="labels" :value="__('models.task.labels')" />
+    <x-select-multiple id="labels[]" class="w-1/3 h-32" name="labels[]" :items=$labels :value="$labelValues" />
+    <x-input-error :messages="$errors->get('labels')" class="mt-2" />
+</div>
