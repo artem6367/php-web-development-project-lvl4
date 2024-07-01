@@ -1,10 +1,10 @@
 install:
 	composer install
 	npm install
+	npm run build
 	cp -p .env.example .env
 	php artisan key:generate
 	php artisan migrate
-	npm run build
 
 test:
 	composer exec --verbose phpunit tests
