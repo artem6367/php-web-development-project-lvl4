@@ -44,6 +44,7 @@ return [
     'task' => [
         'index' => [
             'header' => 'Задачи',
+            'toFilter' => 'Применить',
             'create' => 'Создать задачу',
             'actions' => 'Действия',
             'update' => 'Изменить',

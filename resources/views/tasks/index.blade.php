@@ -1,13 +1,26 @@
 <x-app-layout>
     <x-slot name="title">Менеджер задач</x-slot>
     <x-slot name="header">{{ __('views.task.index.header') }}</x-slot>
-    @if (Auth::check())
-        <div class="mb-4">
-            <a href="{{ route('tasks.create') }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                {{ __('views.task.index.create') }}</a>
+    <div class="w-full flex items-center">
+        <div>
+            <form method="GET" action="{{ route('tasks.index') }}">
+                <div class="flex">
+                    <x-select id="filter[status_id]" name="filter[status_id]" :items=$statuses :defaultTitle="__('models.task.status')" :value="$filter['status_id']" />
+                    <x-select id="filter[created_by_id]" name="filter[created_by_id]" :items=$users :defaultTitle="__('models.task.author')" :value="$filter['created_by_id']" />
+                    <x-select id="filter[assigned_to_id]" name="filter[assigned_to_id]" :items=$users :defaultTitle="__('models.task.executor')" :value="$filter['assigned_to_id']" />
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                        type="submit">{{ __('views.task.index.toFilter') }}</button>
+                </div>
+            </form>
         </div>
-    @endif
+        @if (Auth::check())
+            <div class="ml-auto">
+                <a href="{{ route('tasks.create') }}"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    {{ __('views.task.index.create') }}</a>
+            </div>
+        @endif
+    </div>
     <table class="w-full">
         <thead class="border-b-2 border-solid border-black text-left">
             <tr>
